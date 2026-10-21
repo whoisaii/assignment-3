@@ -262,18 +262,21 @@ The operation counts agree with the implementations' predicted scan, sort, and h
 | Experimental design | 10 | Exact sizes, fixed seeds, 20 warmups, five measurements, nanoTime and counters |
 | Results and discussion | 10 | Raw and summarized CSVs, both plots, measured interpretation and limitations |
 | Testing | 5 | Deterministic edge cases and independent randomized oracles |
-| README and GitHub quality | 5 | Complete report, organized source tree, local Git history; remote publication remains to be done |
+| README and GitHub quality | 5 | Complete report, organized source tree, meaningful Git history and GitHub repository |
 | **Total available** | **100** | Coverage checklist, not a guaranteed grade |
 
-### Publish and submit
+### Repository
 
-The local project has meaningful Git commits. The commit identity is the neutral local label `Assignment Project <assignment@local.invalid>`; it does not claim a student's identity. Set your own name/email for future commits. Review the source, run the commands above, and make sure you can explain the algorithm choices.
+Repository: [whoisaii/assignment-3](https://github.com/whoisaii/assignment-3).
 
-Create an **empty** GitHub repository named `assignment-3` (without an automatically created README), then run from this directory, replacing `YOUR_USERNAME`:
+Clone and verify:
 
 ```sh
-git remote add origin https://github.com/YOUR_USERNAME/assignment-3.git
-git push -u origin main
+git clone https://github.com/whoisaii/assignment-3.git
+cd assignment-3
+sh run.sh test
+sh run.sh demo
 ```
 
-Check that the README plots render on GitHub and that the source files and CSV data are present, then submit the repository URL. No remote GitHub repository has been created by this local build.
+Use the repository URL for submission. The source code, measured CSV data, plots, and full report are versioned together.
+
