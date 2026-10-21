@@ -86,11 +86,11 @@ V is the number of vertices and E the number of logical edges. The graph represe
 | Lazy Dijkstra | O(V + E + (E+1) log(E+1)) | O(V+E) | Full negative-weight validation plus duplicate-entry binary heap; at most E successful relaxations |
 | Reconstruct one shortest path | O(V) worst case | O(V) | Walk predecessors and reverse; unreachable path O(1) |
 
-For simple graphs, E ≤ V², so the heap-based bounds can also be expressed using log V (for example O((V+E) log V) when V ≥ 2). The more explicit log E form reflects the implementations and also covers parallel edges. No O(V)-heap decrease-key bound is claimed.
+For simple graphs, E ≤ V², so the heap-based bounds can also be expressed using log V (for example O((V+E) log V) when V ≥ 2). The more explicit log E form reflects the implementations and also covers parallel edges. These implementations do not use decrease-key.
 
 More vertices increase initialization, traversal state, and output costs. More edges increase scans, sorting, and heap work. For sparse graphs with E proportional to V, SCC and topological ordering are linear in V, while sorting/heap methods are generally O(V log V). For dense simple graphs, E can grow quadratically; edge work dominates. Increasing V alone does not necessarily increase heap work if most vertices remain isolated.
 
-Union by size bounds depth because whenever a vertex's depth increases, its containing component at least doubles. Compression shortens later root searches. Together they make repeated DSU operations nearly constant amortized time. Without either optimization, a poor sequence can produce linear-height trees. The experiment counts DSU calls and parent traversals in Kruskal, but does not measure an unoptimized baseline; no empirical optimization speedup is claimed.
+Union by size bounds depth because whenever a vertex's depth increases, its containing component at least doubles. Compression shortens later root searches. Together they make repeated DSU operations nearly constant amortized time. Without either optimization, a poor sequence can produce linear-height trees. The experiment records DSU calls and parent traversals in Kruskal. It does not include an unoptimized DSU baseline.
 
 ## Experimental Setup
 
@@ -182,7 +182,7 @@ Warmups: 20 per graph/algorithm; measured repetitions: 5
 
 The complete machine-readable data is in [raw.csv](results/tables/raw.csv) and [summary.csv](results/tables/summary.csv).
 
-### Required plots
+### Execution time plots
 
 ![Execution time versus vertices](results/plots/time-vs-vertices.svg)
 
@@ -198,7 +198,7 @@ Measured mean-time ratios are **V=10: Kruskal/Prim = 0.74; V=100: Kruskal/Prim =
 
 Kruskal sorts every logical edge but can stop its DSU scan once V-1 edges have been accepted. At V=1,000, it examines 3,317 candidates, invokes the sort comparator 55,214 times, and makes 6,634 find calls. Prim scans 10,000 adjacency entries, offers/polls 5,000 heap entries, and makes 112,192 heap comparator calls. Prim's lazy heap processes outdated edges; Kruskal spends work sorting edges even if it never considers them for its tree.
 
-In the recorded run, timing does not follow comparator counts proportionally. Comparator cost, collection operations, allocations, cache behavior, JIT compilation, and instrumentation differ. Equal total MST weight and forest invariants establish correctness; a smaller runtime does not establish it. Kruskal is convenient when edges are already available as a list; Prim naturally uses adjacency lists and can benefit from other heap designs, which were not tested here.
+In the recorded run, timing does not follow comparator counts proportionally. Comparator cost, collection operations, allocations, cache behavior, JIT compilation, and instrumentation differ. Both implementations return equal total weights and pass the forest validity checks. Kruskal is convenient when edges are already available as a list; Prim naturally uses adjacency lists and can benefit from other heap designs, which were not tested here.
 
 ### SCC scaling
 
@@ -214,13 +214,13 @@ Dijkstra's mean runtime grows by **22.98×** from small to large. Heap comparato
 
 ### Limits of the experiment
 
-The required five repetitions provide a small sample, not a reliable distribution estimate. There is one JVM process, a fixed algorithm order, no separate process forks, and no control of scheduling, CPU frequency, garbage collection, or background activity. Twenty warmups reduce startup effects but do not guarantee steady-state compilation. Counter instrumentation itself adds cost. The measurements are suitable for this reproducible coursework comparison, not for broad performance claims. A stronger future study would use multiple graph seeds, independent density sweeps, randomized order, more repetitions, and a dedicated JVM benchmark harness. These extensions are not represented as completed experiments.
+The required five repetitions provide a small sample, not a reliable distribution estimate. There is one JVM process, a fixed algorithm order, no separate process forks, and no control of scheduling, CPU frequency, garbage collection, or background activity. Twenty warmups reduce startup effects but do not guarantee steady-state compilation. Counter instrumentation itself adds cost. The timings describe these inputs and this machine. A stronger future study would use multiple graph seeds, independent density sweeps, randomized order, more repetitions, and a dedicated JVM benchmark harness. 
 
 ## Testing
 
 `sh run.sh test` passes **63,561 checks**, including the following:
 
-| Requirement / risk | Test and oracle |
+| Test case | Verification |
 | --- | --- |
 | Small known graph | Demo MST total 13; explicitly constructed unit cases check weights and components |
 | Disconnected graphs | Edgeless four-vertex graph and two-component weighted graph; both algorithms return valid forests |
@@ -242,7 +242,7 @@ The required five repetitions provide a small sample, not a reliable distributio
 | Input contracts | Reject invalid endpoints, empty graph, wrong directedness, invalid source |
 | Reproducibility | Regenerated seeded edge lists match; benchmark counters match all five repeats |
 
-Randomized checks supplement the algorithm arguments; they do not prove correctness for every possible input. Tests use their own assertions, so disabling Java assertions cannot silently skip them. Benchmarks independently verify MST weight agreement and expected DAG/cycle status before measurement.
+Tests use explicit checks that throw on failure. Before timing, the benchmark also checks that the MST weights agree and that the generated DAG and cyclic graphs have the expected status.
 
 ## Conclusion
 
@@ -250,22 +250,7 @@ Use Kruskal or Prim to minimize total infrastructure construction cost; on disco
 
 The operation counts agree with the implementations' predicted scan, sort, and heap behavior. Runtime measurements show that constants and JVM effects matter at these graph sizes, so the evidence supports task-specific algorithm selection rather than a universal fastest algorithm.
 
-## Submission and rubric checklist
-
-| Criterion | Points | Evidence |
-| --- | --- | --- |
-| DSU | 10 | `src/dsu/DSU.java`; compression, union by size, operation counters and tests |
-| Kruskal and Prim | 20 | `src/mst/MinimumSpanningTree.java`; total cost, components, identical-input comparisons |
-| SCC and topological ordering | 15 | `src/connectivity/Connectivity.java`; iterative Kosaraju, Kahn and cycle tests |
-| Dijkstra | 15 | `src/shortestpath/Dijkstra.java`; paths, unreachable vertices, weight validation |
-| Complexity analysis | 10 | Implementation-specific time/space table and V/E discussion |
-| Experimental design | 10 | Exact sizes, fixed seeds, 20 warmups, five measurements, nanoTime and counters |
-| Results and discussion | 10 | Raw and summarized CSVs, both plots, measured interpretation and limitations |
-| Testing | 5 | Deterministic edge cases and independent randomized oracles |
-| README and GitHub quality | 5 | Complete report, organized source tree, meaningful Git history and GitHub repository |
-| **Total available** | **100** | Coverage checklist, not a guaranteed grade |
-
-### Repository
+## Repository
 
 Repository: [whoisaii/assignment-3](https://github.com/whoisaii/assignment-3).
 
@@ -278,5 +263,5 @@ sh run.sh test
 sh run.sh demo
 ```
 
-Use the repository URL for submission. The source code, measured CSV data, plots, and full report are versioned together.
+
 

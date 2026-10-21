@@ -26,7 +26,7 @@ public final class Connectivity {
         boolean dag = order.size() == g.size();
         return new Topology(dag, dag ? List.copyOf(order) : List.of());
     }
-    /** Kosaraju with explicit stacks, including a per-vertex DFS cursor for finishing order. */
+    /** Iterative Kosaraju; next[v] tracks the next neighbor in the first DFS pass. */
     public static List<List<Integer>> scc(Graph g, Metrics m) {
         requireDirected(g);
         int n = g.size(); boolean[] seen = new boolean[n]; int[] next = new int[n];

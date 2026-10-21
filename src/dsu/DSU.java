@@ -2,7 +2,7 @@ package dsu;
 
 import graph.Metrics;
 
-/** Iterative path compression and union by size avoid deep recursive find calls. */
+/** Disjoint sets with path compression and union by size. */
 public final class DSU {
     private final int[] parent, size;
     private final Metrics metrics;

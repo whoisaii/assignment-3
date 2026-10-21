@@ -37,7 +37,7 @@ public final class MinimumSpanningTree {
         }
         return new Result(total, List.copyOf(chosen), components);
     }
-    /** Lazy edge-heap Prim; restarting at each unseen vertex returns a minimum spanning forest. */
+    /** Lazy Prim. Restart at unseen vertices to handle disconnected graphs. */
     public static Result prim(Graph g, Metrics m) {
         requireUndirected(g);
         boolean[] seen = new boolean[g.size()];
