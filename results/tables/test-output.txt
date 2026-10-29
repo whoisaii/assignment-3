@@ -1,1 +1,0 @@
-PASS: 63561 correctness checks; 30 random seeds and a 20,000-vertex chain.

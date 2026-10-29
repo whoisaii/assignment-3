@@ -1,7 +1,0 @@
-Recorded at: 2026-10-21T13:17:48.793527Z
-Java: 17.0.17
-VM: OpenJDK 64-Bit Server VM
-OS: Mac OS X 26.1
-Architecture: aarch64
-Processors available: 8
-Warmups: 20 per graph/algorithm; measured repetitions: 5
