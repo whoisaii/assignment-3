@@ -12,6 +12,7 @@ case "${1:-demo}" in
         java -cp out tests.GraphTests
         java -cp out tests.DirectedTests
         java -cp out tests.ExperimentTests
+        java -cp out tests.MSTOptimalityTests
         ;;
     demo)
         java -cp out Main

@@ -1,0 +1,7 @@
+Java: 17.0.17
+VM: OpenJDK 64-Bit Server VM
+OS: Mac OS X 26.1
+Architecture: aarch64
+Available processors: 8
+Measured at UTC: 2026-11-01T10:26:53.795185Z
+Seed: 42 + V; weights: 1..100; warmups: 20; repeats: 5

@@ -1,0 +1,4 @@
+All 199 checks passed.
+All 6368 directed checks passed.
+Experiment checks passed.
+MST optimality checks passed for 30 graphs.
